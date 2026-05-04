@@ -1,0 +1,13 @@
+# ================================================================
+# api/.htaccess
+# Bloquea acceso directo a los archivos privados (helpers internos)
+# que comienzan con underscore. Sólo los endpoints reales son
+# accesibles vía web.
+# ================================================================
+
+<FilesMatch "^_.*\.php$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear cualquier intento de listar el directorio
+Options -Indexes

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Asistencia – Feria Laboral</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="styles/empresas.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div class="card">
+
+            <div class="brand-header">
+                <div class="brand-mark">CA</div>
+                <div class="brand-title">Centro Colombo Americano</div>
+            </div>
+
+            <div class="company-label">
+                Control de Asistencia
+            </div>
+
+            <div id="attendanceCounter" class="counter">
+                Asistentes ingresados: 0
+            </div>
+
+            <button id="exportBtn" class="scan-button secondary">
+                Exportar asistentes (CSV)
+            </button>
+
+            <button id="startScanBtn" class="scan-button">
+                Iniciar escaneo QR
+            </button>
+
+            <div id="message" class="message"></div>
+            <div id="reader" class="qr-reader"></div>
+
+            <div class="table-section">
+                <h3>Asistentes escaneados</h3>
+
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Correo</th>
+                                <th>Telefono</th>
+                                <th>Identificación</th>
+                                <th>Nivel de estudios</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS: _api.js DEBE cargarse antes de asistencia.js -->
+    <script src="js/_api.js"></script>
+    <script src="js/asistencia.js"></script>
+</body>
+
+</html>

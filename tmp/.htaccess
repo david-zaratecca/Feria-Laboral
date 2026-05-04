@@ -1,0 +1,4 @@
+# El directorio tmp/ contiene datos internos de runtime.
+# Ningún archivo aquí debe ser accesible por web.
+Require all denied
+Options -Indexes

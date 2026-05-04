@@ -1,0 +1,99 @@
+# ================================================================
+# .htaccess - Centro Colombo Americano | Feria Laboral
+# Configuración de seguridad para Apache (SiteGround / cPanel)
+# ================================================================
+
+# ----------------------------------------------------------------
+# 1. FORZAR HTTPS
+# ----------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ----------------------------------------------------------------
+# 2. BLOQUEAR ARCHIVOS SENSIBLES
+# ----------------------------------------------------------------
+<FilesMatch "^\.(env|env\..*|gitignore|git|htaccess|htpasswd)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(env|log|md|sql|bak|backup|swp|swo|orig|ini)$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear acceso al directorio docs/
+RedirectMatch 403 ^/docs(/.*)?$
+
+# Bloquear acceso al directorio tmp/
+RedirectMatch 403 ^/tmp(/.*)?$
+
+# ----------------------------------------------------------------
+# 3. DESHABILITAR LISTADO DE DIRECTORIOS
+# ----------------------------------------------------------------
+Options -Indexes
+ServerSignature Off
+
+# ----------------------------------------------------------------
+# 4. CABECERAS DE SEGURIDAD HTTP
+# ----------------------------------------------------------------
+<IfModule mod_headers.c>
+    # Evita que el navegador adivine el tipo MIME
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Anti-clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # No filtrar el referrer completo a sitios externos
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # HSTS: forzar HTTPS por 1 año (incluye subdominios)
+    # Activar SOLO cuando ya estés 100% seguro de que el dominio funciona en HTTPS
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Permisos: la cámara la necesitamos para QR; el resto bloqueado
+    Header always set Permissions-Policy "camera=(self), microphone=(), geolocation=(), payment=(), usb=()"
+
+    # Content Security Policy
+    # Permite: self, Google reCAPTCHA, Google Fonts, unpkg (html5-qrcode)
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://www.google.com https://www.gstatic.com https://unpkg.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://www.google.com; frame-src https://www.google.com; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';"
+
+    # Quitar cabecera que delata la versión de PHP
+    Header unset X-Powered-By
+    Header always unset X-Powered-By
+</IfModule>
+
+# ----------------------------------------------------------------
+# 5. PROTECCIÓN ANTI HOTLINKING (opcional, descomentar si se necesita)
+# ----------------------------------------------------------------
+# <IfModule mod_rewrite.c>
+#     RewriteCond %{HTTP_REFERER} !^$
+#     RewriteCond %{HTTP_REFERER} !^https?://(www\.)?colombobogota\.edu\.co [NC]
+#     RewriteRule \.(jpe?g|png|gif|webp|svg)$ - [F,NC,L]
+# </IfModule>
+
+# ----------------------------------------------------------------
+# 6. COMPRESIÓN
+# ----------------------------------------------------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json
+</IfModule>
+
+# ----------------------------------------------------------------
+# 7. CACHÉ DE ARCHIVOS ESTÁTICOS
+# ----------------------------------------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType font/woff2 "access plus 1 year"
+    # No cachear HTML ni JSON
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType application/json "access plus 0 seconds"
+</IfModule>
