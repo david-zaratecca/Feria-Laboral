@@ -58,7 +58,7 @@ ServerSignature Off
 
     # Content Security Policy
     # Permite: self, Google reCAPTCHA, Google Fonts, unpkg (html5-qrcode)
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://www.google.com https://www.gstatic.com https://unpkg.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://www.google.com; frame-src https://www.google.com; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://www.google.com https://www.gstatic.com https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://www.google.com; frame-src https://www.google.com; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';"
 
     # Quitar cabecera que delata la versión de PHP
     Header unset X-Powered-By
