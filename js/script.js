@@ -67,6 +67,7 @@
                 nombre:    data.nombre,
                 rol:       data.rol,
                 companyId: data.companyId,
+                companyName: data.companyName,
             });
 
             // Redirigir por rol

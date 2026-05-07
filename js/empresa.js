@@ -13,7 +13,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
-
+    
     const user = Api.requireRole('Empresa');
     if (!user) return;
 
@@ -33,7 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const counterEl  = document.getElementById('companyCounter');
     const exportBtn  = document.getElementById('exportBtn');
 
-    if (banner) banner.textContent = `Empresa · ${user.nombre || ''}`;
+    const companyName = user.companyName.replace(/^FL\d+\s*/i, '');
+
+    if (banner) banner.textContent = `${companyName}`;
 
     let scanning = false;
     let qr = null;

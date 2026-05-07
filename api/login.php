@@ -55,13 +55,50 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 // 3. DOMINIOS PERMITIDOS
 // ============================================================
 $allowedDomains = [
-    'empresa.com',
-    'universidad.edu',
-    'organizador.org',
-    'hotmail.com',
     'colombobogota.edu.co',
-    'gmail.com',
+    'adecco.com',
+    'desarrolloeconomico.gov.co',
+    'sena.edu.co',
+    'americasbps.com',
+    'ymcacolombia.org',
+    'anyvan.com',
+    'asurion.com',
+    'atento.com',
+    'atlanticqi.com',
+    'bet365.com',
+    'bpmconsulting.com.co',
+    'capgemini.com',
+    'comfandi.com.co',
+    'concentrix.com',
+    'dhl.com',
+    'ea.com',
+    'state.gov',
+    'ensenaporcolombia.org',
+    'weareeverise.com',
+    'foundever.com',
+    'ajg.com',
+    'hirehoratio.co',
+    'aloftbogotaairport.com',
+    'igtsolutions.com',
+    'innovaschools.edu.co',
+    'unica.edu.co',
+    'interactivo.com.co',
+    'intouchcx.com',
+    'konecta.com',
+    'leangroup.com',
+    'andi.com.co',
+    'colombiapass.com',
+    'omc.com',
+    'sutherlandglobal.com',
+    'tca-staffing.com',
+    'tdcx.com',
+    'teleperformance.com',
+    'trustcore-services.com',
+    'ttec.com',
+    'valuanceglobal.com',
+    'zemsania.com'
 ];
+
 $domain = substr(strrchr($email, '@') ?: '', 1);
 if ($domain === '' || !in_array($domain, $allowedDomains, true)) {
     // Mensaje genérico — no revelar la razón real
@@ -142,16 +179,43 @@ if (!hash_equals($idGuardado, $password)) {
 // 7. SI ES EMPRESA, OBTENER companyId ASOCIADO
 // ============================================================
 $companyId = null;
+$companyName = null;
 if ($rol === 'Empresa') {
     [$assocCode, $assocData] = hubspotRequest(
         'GET',
         "/crm/v4/objects/contacts/{$contact['id']}/associations/companies"
     );
-    if ($assocCode === 200 && !empty($assocData['results'][0]['toObjectId'])) {
-        $companyId = (string) $assocData['results'][0]['toObjectId'];
+    if ($assocCode === 200 && !empty($assocData['results'])) {
+        foreach ($assocData['results'] as $company){
+            if (!empty($company['associationTypes'])) {
+
+                foreach ($company['associationTypes'] as $associationType) {
+
+                    if (
+                        isset($associationType['typeId']) &&
+                        $associationType['typeId'] == 1
+                    ) {
+                        $companyId = (string) $company['toObjectId'];
+                        break 2;
+                    }
+                }
+            }
+        }
     }
+
     if ($companyId === null) {
         jsonError(403, 'No se pudo identificar la empresa del usuario');
+    }
+
+    [$companyCode, $companyData] = hubspotRequest(
+        'GET',
+        "/crm/v3/objects/companies/{$companyId}?properties=name"
+    );
+
+    if ($companyCode === 200 && !empty($companyData['properties']['name'])) {
+        $companyName = $companyData['properties']['name'];
+    } else {
+        jsonError(404, 'No se pudo obtener el nombre de la empresa');
     }
 }
 
@@ -159,10 +223,11 @@ if ($rol === 'Empresa') {
 // 8. EMITIR JWT
 // ============================================================
 $claims = [
-    'sub'       => (string) $contact['id'],   // identificador único
-    'rol'       => $rol,
-    'nombre'    => $nombre,
-    'companyId' => $companyId,                // null si es Asistente
+    'sub'         => (string) $contact['id'],
+    'rol'         => $rol,
+    'nombre'      => $nombre,
+    'companyId'   => $companyId,
+    'companyName' => $companyName,
 ];
 $token = jwtIssue($claims);
 
@@ -170,9 +235,10 @@ $token = jwtIssue($claims);
 clearLoginRateLimit($ip);
 
 jsonResponse(200, [
-    'success'   => true,
-    'token'     => $token,
-    'nombre'    => $nombre,
-    'rol'       => $rol,
-    'companyId' => $companyId,
+    'success'     => true,
+    'token'       => $token,
+    'nombre'      => $nombre,
+    'rol'         => $rol,
+    'companyId'   => $companyId,
+    'companyName' => $companyName,
 ]);

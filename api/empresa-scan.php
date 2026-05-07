@@ -43,6 +43,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 // ============================================================
 $contact = hubspotSearchContact('email', $email, [
     'registro_feria_laboral',
+    'asistio_feria',
     'firstname',
     'lastname',
     'email',
@@ -59,6 +60,7 @@ $contactId = (string) $contact['id'];
 $p         = $contact['properties'] ?? [];
 
 $registroFeria = strtolower((string) ($p['registro_feria_laboral'] ?? 'no'));
+$asistioFeria = strtolower((string) ($p['asistio_feria'] ?? 'no'));
 
 $contactPayload = [
     'firstname'                => (string) ($p['firstname']                ?? ''),
@@ -72,7 +74,7 @@ $contactPayload = [
 // ============================================================
 // VALIDAR REGISTRO PREVIO
 // ============================================================
-if ($registroFeria !== 'si') {
+if ($registroFeria !== 'si' || $asistioFeria !== 'si') {
     jsonError(403, 'La persona no está registrada en la feria');
 }
 
