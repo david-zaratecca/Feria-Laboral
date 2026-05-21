@@ -99,8 +99,9 @@ $allowedDomains = [
     'zemsania.com',
     'generation.org',
     'manpower.com.co',
-    'vadel',
-    'kpmg.com'
+    'vadel.com.co',
+    'kpmg.com',
+    'kenvue.com'
 ];
 
 $domain = substr(strrchr($email, '@') ?: '', 1);
