@@ -96,7 +96,9 @@ $allowedDomains = [
     'trustcore-services.com',
     'ttec.com',
     'valuanceglobal.com',
-    'zemsania.com'
+    'zemsania.com',
+    'generation.org',
+    'manpower.com.co'
 ];
 
 $domain = substr(strrchr($email, '@') ?: '', 1);
